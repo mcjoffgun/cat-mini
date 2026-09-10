@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm view *)",
+      "Bash(npm ls *)",
+      "Bash(cat)",
+      "Bash(node /tmp/debug-chunk.js)",
+      "Bash(npx uni *)"
+    ]
+  }
+}

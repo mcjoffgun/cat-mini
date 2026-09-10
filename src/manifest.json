@@ -1,0 +1,26 @@
+{
+  "name": "喵星人图鉴",
+  "appid": "wxfd53fa8022565f10",
+  "description": "猫咪品种图鉴与养猫工具小程序",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "vueVersion": "3",
+  "h5": {
+    "title": "喵星人图鉴",
+    "router": {
+      "mode": "hash",
+      "base": "/"
+    }
+  },
+  "mp-weixin": {
+    "appid": "wxfd53fa8022565f10",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "postcss": true,
+      "minified": true
+    },
+    "usingComponents": true
+  }
+}

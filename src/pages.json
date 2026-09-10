@@ -1,0 +1,89 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "喵星人图鉴",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/catalog/index",
+      "style": {
+        "navigationBarTitleText": "猫咪图鉴",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/catalog/detail",
+      "style": {
+        "navigationBarTitleText": "品种详情",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/tools/index",
+      "style": {
+        "navigationBarTitleText": "养猫工具",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/tool-detail/age-converter",
+      "style": {
+        "navigationBarTitleText": "年龄换算器"
+      }
+    },
+    {
+      "path": "pages/tool-detail/vaccine",
+      "style": {
+        "navigationBarTitleText": "疫苗驱虫提醒"
+      }
+    },
+    {
+      "path": "pages/tool-detail/body-language",
+      "style": {
+        "navigationBarTitleText": "猫咪身体语言"
+      }
+    },
+    {
+      "path": "pages/tool-detail/diary",
+      "style": {
+        "navigationBarTitleText": "养猫日记"
+      }
+    },
+    {
+      "path": "pages/tool-detail/feeding",
+      "style": {
+        "navigationBarTitleText": "喂食记录"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "喵星人图鉴",
+    "navigationBarBackgroundColor": "#FFFCF8",
+    "backgroundColor": "#FFFCF8",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#C4B8A8",
+    "selectedColor": "#FF9F6B",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/catalog/index",
+        "text": "图鉴"
+      },
+      {
+        "pagePath": "pages/tools/index",
+        "text": "工具"
+      }
+    ]
+  }
+}

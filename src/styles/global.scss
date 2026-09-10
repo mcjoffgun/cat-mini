@@ -1,0 +1,144 @@
+/* ========================================
+ * 喵星人图鉴 · 全局工具类样式
+ * 在 App.vue 或需要处 @import
+ * ======================================== */
+
+/* ---------- 卡片 ---------- */
+.cat-card {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+/* ---------- 布局 ---------- */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- 文本 ---------- */
+.text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.text-primary {
+  color: $text-primary;
+}
+
+.text-secondary {
+  color: $text-secondary;
+}
+
+.text-muted {
+  color: $text-muted;
+}
+
+.text-primary-color {
+  color: $primary;
+}
+
+/* ---------- 标签 ---------- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-sm;
+  line-height: 1.6;
+}
+
+.tag-mint {
+  background: rgba(143, 215, 199, 0.2);
+  color: #3f9c8c;
+}
+
+.tag-purple {
+  background: rgba(201, 184, 232, 0.25);
+  color: #7a63ad;
+}
+
+.tag-cream {
+  background: rgba(255, 159, 107, 0.12);
+  color: $primary-dark;
+}
+
+/* ---------- 按钮 ---------- */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, $primary-light, $primary);
+  color: #ffffff;
+  font-size: $font-subtitle;
+  font-weight: $font-weight-bold;
+  box-shadow: $shadow-card;
+  border: none;
+
+  &:active {
+    background: linear-gradient(135deg, $primary, $primary-dark);
+  }
+}
+
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: $bg-card;
+  border: 2rpx solid $divider;
+  color: $text-secondary;
+  font-size: $font-subtitle;
+
+  &:active {
+    background: $accent-cream;
+  }
+}
+
+/* ---------- 空状态 ---------- */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-xl 0;
+  color: $text-muted;
+  font-size: $font-md;
+
+  .empty-icon {
+    font-size: 80rpx;
+    margin-bottom: $spacing-md;
+  }
+}
+
+/* ---------- 安全区 ---------- */
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
