@@ -8,13 +8,13 @@
 
 | 项目 | 技术栈 | 说明 |
 |------|--------|------|
-| 框架 | **Vue3 + TypeScript + UniApp** | 跨端，一套代码多端运行（小程序/H5/App） |
+| 框架 | **Vue3 + TypeScript + UniApp** | 面向微信小程序开发 |
 | 状态管理 | **Pinia** | 唯一状态管理方案，禁用其他方案 |
 | 构建工具 | Vite | 由 UniApp CLI 内置驱动 |
 | 样式方案 | SCSS | 全局变量 + 设计规范统一管理 |
 | 语言 | TypeScript（strict 模式） | 所有业务代码必须带类型定义 |
 
-> ⚠️ **开发约束**：本项目所有状态（收藏、日记、设置等）统一使用 Pinia 管理，禁止组件间直接 `uni.setStorageSync` 传递状态。
+> ⚠️ **开发约束**：本项目业务状态（收藏、日记、喂食、疫苗提醒等）统一使用 Pinia 管理，禁止组件间直接 `uni.setStorageSync` 传递状态。
 
 ---
 
@@ -25,7 +25,7 @@
 | 项目名称 | 喵星人图鉴（暂定） |
 | 技术栈 | Vue3 + TypeScript + UniApp + Pinia |
 | UI 风格 | 可爱治愈风（奶橘主色 + 奶油色系） |
-| 目标平台 | 微信小程序（后续可扩展 H5 / App） |
+| 目标平台 | 微信小程序 |
 | 数据来源 | 内置静态数据（首批约 20 个品种） |
 
 ---
@@ -55,14 +55,13 @@
 - **搜索入口**：跳转到图鉴搜索
 
 ### 模块二：图鉴（核心）
-- **品种列表**：卡片式瀑布流 / 网格布局
-- **搜索功能**：按品种名称搜索
+- **品种列表**：卡片式网格布局
+- **搜索功能**：按品种名称、英文名、别名或性格标签搜索
 - **分类筛选**：
   - 按体型：小型 / 中型 / 大型
-  - 按毛发：短毛 / 长毛 / 无毛
-  - 按性格：亲人 / 独立 / 活泼 / 安静
+  - 按毛发：短毛 / 长毛 / 无毛 / 卷毛
 - **品种详情页**：
-  - 高清大图轮播
+  - 主图或色块 + emoji 占位图
   - 基本信息卡（产地、寿命、体重、性格标签）
   - 外形特征
   - 性格特点
@@ -75,10 +74,11 @@
 |------|--------|------|
 | 🐱 年龄换算器 | P0 | 猫咪年龄 ↔ 人类年龄换算 |
 | 💉 疫苗驱虫提醒 | P0 | 录入下次日期，倒计时展示 |
-| 📝 养猫日记 | P1 | 文字 + 图片，时间线展示 |
+| 📝 养猫日记 | P1 | 文字记录，时间线展示 |
 | 🍚 喂食记录 | P1 | 记录喂粮时间和量 |
-| 🧮 养猫成本计算器 | P2 | 月均花费估算 |
-| ❓ 猫咪身体语言 | P1 | 尾巴/耳朵/呼噜声含义图解 |
+| ❓ 猫咪身体语言 | P1 | 尾巴、耳朵和声音等行为解读 |
+
+养猫成本计算器、真实图片和日记图片仍在规划中。品种详情、日记和首页已支持分享给好友与朋友圈。
 
 ---
 
@@ -138,31 +138,37 @@ cat-miniapp/
 │   │   │   └── detail.vue      # 品种详情
 │   │   ├── tools/              # 工具页
 │   │   └── tool-detail/        # 各工具详情页
-│   │       ├── age-converter/
-│   │       ├── vaccine/
-│   │       └── diary/
+│   │       ├── age-converter.vue
+│   │       ├── body-language.vue
+│   │       ├── diary.vue
+│   │       ├── feeding.vue
+│   │       └── vaccine.vue
 │   ├── components/             # 公共组件
+│   │   ├── breed-image/        # 猫咪图片/占位图
 │   │   ├── cat-card/           # 猫咪卡片
+│   │   ├── empty/              # 空状态
 │   │   ├── nav-bar/            # 自定义导航栏
-│   │   ├── tab-bar/            # 自定义底部导航
-│   │   └── empty/              # 空状态
+│   │   └── score-bar/          # 评分条
 │   ├── data/                   # 静态数据
-│   │   └── cat-breeds.ts       # 猫咪品种数据
+│   │   ├── body-language.ts    # 猫咪身体语言数据
+│   │   ├── cat-breeds.ts       # 猫咪品种数据
+│   │   ├── cat-facts.ts        # 养猫知识数据
+│   │   └── types.ts            # 业务类型定义
 │   ├── stores/                 # Pinia 状态管理
+│   │   ├── diary.ts            # 日记数据
 │   │   ├── favorite.ts         # 收藏
-│   │   └── diary.ts            # 日记数据
+│   │   ├── feeding.ts          # 喂食记录
+│   │   └── vaccine.ts          # 疫苗驱虫提醒
 │   ├── utils/                  # 工具函数
 │   │   ├── age.ts              # 年龄换算
-│   │   ├── storage.ts          # 本地存储封装
-│   │   └── date.ts             # 日期处理
+│   │   ├── date.ts             # 日期处理
+│   │   ├── id.ts               # ID 生成
+│   │   └── storage.ts          # 本地存储工具
 │   ├── styles/                 # 全局样式
-│   │   ├── variables.scss      # 样式变量
 │   │   └── global.scss         # 全局样式
-│   ├── static/                 # 静态资源
-│   │   ├── images/
-│   │   └── icons/
 │   ├── manifest.json           # 应用及平台配置
 │   ├── pages.json              # 页面路由与全局样式配置
+│   ├── uni.scss                # 全局 SCSS 变量
 │   ├── App.vue
 │   └── main.ts
 ├── package.json
@@ -175,14 +181,14 @@ cat-miniapp/
 
 | 技术 | 选型 | 理由 |
 |------|------|------|
-| 框架 | UniApp + Vue3 | 跨端，一套代码多端运行 |
+| 框架 | UniApp + Vue3 | 微信小程序应用开发 |
 | 语言 | TypeScript（strict） | 类型安全，可维护性好 |
-| 构建 | Vite 5 | 开发体验好，启动快 |
+| 构建 | Vite 8.2.2 | 与当前 UniApp 编译器版本匹配 |
 | 状态管理 | **Pinia 2** | **唯一方案**，Vue3 官方推荐，轻量易用 |
 | 样式 | SCSS（sass） | 变量、嵌套、混入，方便维护 |
 | UI 库 | （自研组件） | 定制化强，轻量无依赖 |
-| 存储 | 本地存储（uni.storage，经 Pinia + utils 封装） | 工具类数据本地化，无需后端 |
-| 图片 | 占位图 + 网络图片 | 首版用静态占位图，后续替换 |
+| 存储 | Pinia 持久化插件 + `uni` storage | 工具类数据本地化，无需后端 |
+| 图片 | 色块 + emoji 占位 | 后续可替换为真实图片 |
 
 ### 版本约束（经 npm registry 核实的兼容组合）
 
@@ -190,8 +196,9 @@ cat-miniapp/
 |------|------|------|
 | Node.js | **>= 20** | 已安装 v20.19.5 |
 | @dcloudio/*（uni 全家桶） | `3.0.0-alpha-1000920260909822` | 必须是 **vue3 标签**版本，`latest` 是 Vue2 版不可用 |
-| vue | ^3.4.21 | |
-| vite | ^5.1.4 | uni vue3 线路支持 |
+| vue | 3.4.21 | 与当前 UniApp 编译器版本匹配 |
+| vite | 8.2.2 | 与当前 `@dcloudio/vite-plugin-uni` 的 peer dependency 一致 |
+| @dcloudio/types | 3.4.31 | UniApp API 类型定义 |
 | pinia | ^2.1.7 | |
 | pinia-plugin-persistedstate | ^3.2.0 | 状态自动持久化到本地 |
 | sass | ^1.71.0 | |
@@ -204,7 +211,7 @@ cat-miniapp/
 ### Phase 1：MVP 版本（优先完成）
 - [x] 项目脚手架搭建
 - [x] 全局样式 & 主题变量
-- [x] 自定义 TabBar + 导航栏
+- [x] 原生 TabBar + 自定义导航栏
 - [x] 猫咪品种数据（20 个品种）
 - [x] 图鉴列表页（搜索 + 筛选）
 - [x] 品种详情页
@@ -216,10 +223,9 @@ cat-miniapp/
 - [x] 工具：喂食记录（提前完成）
 
 ### Phase 2：增强版本
-- [ ] 工具：养猫日记
-- [ ] 工具：喂食记录
-- [ ] 收藏功能
-- [ ] 分享功能
+- [x] 收藏功能
+- [x] 分享功能
+- [ ] 日记图片
 - [ ] 数据持久化优化
 
 ### Phase 3：扩展版本
@@ -268,6 +274,8 @@ interface CatBreed {
   grooming: number       // 打理难度 1-5
   image: string          // 主图
   images?: string[]      // 详情轮播图
+  emoji: string          // 无图时展示的占位 emoji
+  color: string          // 无图时展示的占位背景色
   appearance: string     // 外形特征描述
   character: string      // 性格特点描述
   care: {

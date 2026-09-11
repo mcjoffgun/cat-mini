@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
 import Empty from '@/components/empty/Empty.vue'
 import { useDiaryStore } from '@/stores/diary'
 import type { DiaryEntry } from '@/data/types'
 import { today } from '@/utils/date'
 
 const diaryStore = useDiaryStore()
+
+// 日记为本地个人数据，分享的是工具本身而非具体内容
+onShareAppMessage(() => ({
+  title: '我在用「喵星人图鉴」记录养猫日常，推荐给你',
+  path: '/pages/tool-detail/diary'
+}))
+
+onShareTimeline(() => ({ title: '用「喵星人图鉴」记录猫主子的每一天 🐱' }))
 
 const showForm = ref(false)
 const editingId = ref('')

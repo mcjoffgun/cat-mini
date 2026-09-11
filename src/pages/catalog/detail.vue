@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
 import NavBar from '@/components/nav-bar/NavBar.vue'
 import BreedImage from '@/components/breed-image/BreedImage.vue'
 import Empty from '@/components/empty/Empty.vue'
@@ -33,11 +33,28 @@ function toggleFav() {
   }
 }
 
-function share() {
+/** 分享给好友：带上当前品种，点开直达详情页 */
+onShareAppMessage(() => {
   if (breed.value) {
-    uni.showToast({ title: '分享功能即将上线', icon: 'none' })
+    const tags = breed.value.personality.slice(0, 2).join('·')
+    return {
+      title: `${breed.value.name}｜${tags}，点我看完整图鉴`,
+      path: `/pages/catalog/detail?id=${breed.value.id}`
+    }
   }
-}
+  return { title: '喵星人图鉴 - 一起来认识各种猫咪', path: '/pages/home/index' }
+})
+
+/** 分享到朋友圈：朋友圈路径用 query 传参 */
+onShareTimeline(() => {
+  if (breed.value) {
+    return {
+      title: `${breed.value.name}（${breed.value.englishName}）你了解吗？来喵星人图鉴看看`,
+      query: `id=${breed.value.id}`
+    }
+  }
+  return { title: '喵星人图鉴 - 一起来认识各种猫咪' }
+})
 </script>
 
 <template>
@@ -50,7 +67,7 @@ function share() {
         <view class="detail__hero-btn" @click="toggleFav">
           <text :class="{ 'is-fav': isFav }">{{ isFav ? '♥' : '♡' }}</text>
         </view>
-        <view class="detail__hero-btn" @click="share">↗</view>
+        <button class="detail__hero-btn detail__hero-share" open-type="share">↗</button>
       </view>
     </view>
 
@@ -203,6 +220,18 @@ function share() {
 
     .is-fav {
       color: $accent-purple;
+    }
+  }
+
+  /* 分享按钮：重置小程序 button 默认样式，与圆形图标按钮保持一致 */
+  &__hero-share {
+    padding: 0;
+    margin: 0;
+    border: none;
+    line-height: 1;
+
+    &::after {
+      border: none;
     }
   }
 

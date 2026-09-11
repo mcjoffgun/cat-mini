@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { onShow, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
 import NavBar from '@/components/nav-bar/NavBar.vue'
 import BreedImage from '@/components/breed-image/BreedImage.vue'
 import { catBreeds } from '@/data/cat-breeds'
@@ -33,6 +33,13 @@ onShow(() => {
   currentDate.value = today()
   refreshFact()
 })
+
+onShareAppMessage(() => ({
+  title: '喵星人图鉴 - 认识猫咪品种，科学养猫',
+  path: '/pages/home/index'
+}))
+
+onShareTimeline(() => ({ title: '喵星人图鉴 - 认识猫咪品种，科学养猫 🐱' }))
 
 function goBreedDetail(id: number) {
   uni.navigateTo({ url: `/pages/catalog/detail?id=${id}` })
