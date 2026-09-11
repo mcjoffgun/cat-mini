@@ -143,12 +143,13 @@ cat-miniapp/
 │   │       ├── diary.vue
 │   │       ├── feeding.vue
 │   │       └── vaccine.vue
-│   ├── components/             # 公共组件
+│   ├── components/             # 公共组件（自动按需注册，页面无需 import）
 │   │   ├── breed-image/        # 猫咪图片/占位图
 │   │   ├── cat-card/           # 猫咪卡片
 │   │   ├── empty/              # 空状态
 │   │   ├── nav-bar/            # 自定义导航栏
 │   │   └── score-bar/          # 评分条
+│   ├── components.d.ts         # 自动引入生成的全局组件类型声明（提交入库）
 │   ├── data/                   # 静态数据
 │   │   ├── body-language.ts    # 猫咪身体语言数据
 │   │   ├── cat-breeds.ts       # 猫咪品种数据
@@ -189,6 +190,7 @@ cat-miniapp/
 | 状态管理 | **Pinia 2** | **唯一方案**，Vue3 官方推荐，轻量易用 |
 | 样式 | SCSS（sass） | 变量、嵌套、混入，方便维护 |
 | UI 库 | （自研组件） | 定制化强，轻量无依赖 |
+| 组件引入 | `@uni-helper/vite-plugin-uni-components` | `src/components` 下组件自动按需注册，页面无需手动 import，并生成 `components.d.ts` 类型 |
 | 存储 | Pinia 持久化插件 + `uni` storage | 工具类数据本地化，无需后端；读写容错 + 数据版本信封，支持旧结构迁移 |
 | 图片 | 色块 + emoji 占位 | 后续可替换为真实图片 |
 
@@ -205,6 +207,7 @@ cat-miniapp/
 | pinia-plugin-persistedstate | ^3.2.0 | 状态自动持久化到本地 |
 | sass | ^1.71.0 | |
 | typescript | ^5.3.3 | |
+| @uni-helper/vite-plugin-uni-components | 0.3.2 | 组件自动引入；peer 声明为 vite ^5，与本项目 vite 8 冲突，需用 `npm i -D --legacy-peer-deps` 安装，实测构建兼容 |
 
 ---
 

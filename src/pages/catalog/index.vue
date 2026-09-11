@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import NavBar from '@/components/nav-bar/NavBar.vue'
-import CatCard from '@/components/cat-card/CatCard.vue'
 import { catBreeds } from '@/data/cat-breeds'
 import { SIZE_LABELS, COAT_LABELS } from '@/data/types'
 import type { CatBreed, CatSize, CoatType } from '@/data/types'

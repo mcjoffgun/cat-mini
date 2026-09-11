@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
-import Empty from '@/components/empty/Empty.vue'
 import { useDiaryStore } from '@/stores/diary'
 import type { DiaryEntry } from '@/data/types'
 import { today } from '@/utils/date'

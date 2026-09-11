@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { onShow, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
-import NavBar from '@/components/nav-bar/NavBar.vue'
-import BreedImage from '@/components/breed-image/BreedImage.vue'
 import { catBreeds } from '@/data/cat-breeds'
 import { getRandomFact, catFacts } from '@/data/cat-facts'
 import { today } from '@/utils/date'

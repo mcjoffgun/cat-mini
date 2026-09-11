@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { onLoad, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
-import NavBar from '@/components/nav-bar/NavBar.vue'
-import BreedImage from '@/components/breed-image/BreedImage.vue'
-import Empty from '@/components/empty/Empty.vue'
-import ScoreBar from '@/components/score-bar/ScoreBar.vue'
 import { catBreeds } from '@/data/cat-breeds'
 import { SIZE_LABELS, COAT_LABELS } from '@/data/types'
 import type { CatBreed } from '@/data/types'

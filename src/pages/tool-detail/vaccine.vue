@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
-import Empty from '@/components/empty/Empty.vue'
 import { useVaccineStore } from '@/stores/vaccine'
 import type { VaccineRecord } from '@/data/types'
 import { VACCINE_TYPE_LABELS } from '@/data/types'

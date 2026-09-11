@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import NavBar from '@/components/nav-bar/NavBar.vue'
 import { useDiaryStore } from '@/stores/diary'
 import { useVaccineStore } from '@/stores/vaccine'
 import { useFeedingStore } from '@/stores/feeding'

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import Empty from '@/components/empty/Empty.vue'
 import { useFeedingStore } from '@/stores/feeding'
 import { FOOD_TYPE_LABELS } from '@/data/types'
 import type { FeedingRecord } from '@/data/types'
