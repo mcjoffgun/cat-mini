@@ -6,13 +6,6 @@
   "versionCode": "100",
   "transformPx": false,
   "vueVersion": "3",
-  "h5": {
-    "title": "喵星人图鉴",
-    "router": {
-      "mode": "hash",
-      "base": "/"
-    }
-  },
   "mp-weixin": {
     "appid": "wxfd53fa8022565f10",
     "setting": {
