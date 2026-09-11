@@ -5,6 +5,12 @@ import Empty from '@/components/empty/Empty.vue'
 import { useDiaryStore } from '@/stores/diary'
 import type { DiaryEntry } from '@/data/types'
 import { today } from '@/utils/date'
+import {
+  MAX_DIARY_IMAGES,
+  chooseImages,
+  saveImages,
+  removeSavedImages
+} from '@/utils/image'
 
 const diaryStore = useDiaryStore()
 
@@ -17,6 +23,7 @@ onShareAppMessage(() => ({
 onShareTimeline(() => ({ title: '用「喵星人图鉴」记录猫主子的每一天 🐱' }))
 
 const showForm = ref(false)
+const saving = ref(false)
 const editingId = ref('')
 const form = ref({
   date: today(),
@@ -24,6 +31,12 @@ const form = ref({
   content: '',
   mood: 'happy' as 'happy' | 'normal' | 'sick'
 })
+// 表单中的配图（展示用，混合临时路径与已持久化路径）
+const formImages = ref<string[]>([])
+// formImages 中尚未转存的临时路径子集；提交时才 saveFile，取消不留垃圾文件
+const formTempImages = ref<string[]>([])
+// 编辑前已持久化的图片，用于提交时清理被移除的图片文件
+const editingImages = ref<string[]>([])
 
 const moodOptions = [
   { value: 'happy', label: '😊 开心' },
@@ -38,6 +51,9 @@ function moodIcon(entry: DiaryEntry): string {
 function openAdd() {
   editingId.value = ''
   form.value = { date: today(), title: '', content: '', mood: 'happy' }
+  formImages.value = []
+  formTempImages.value = []
+  editingImages.value = []
   showForm.value = true
 }
 
@@ -49,6 +65,9 @@ function openEdit(entry: DiaryEntry) {
     content: entry.content,
     mood: entry.mood || 'normal'
   }
+  formImages.value = [...(entry.images || [])]
+  formTempImages.value = []
+  editingImages.value = [...(entry.images || [])]
   showForm.value = true
 }
 
@@ -56,35 +75,92 @@ function closeForm() {
   showForm.value = false
 }
 
-function submitForm() {
+/** 选择配图：追加到表单（此时仍是临时路径，提交时才持久化） */
+async function pickImages() {
+  const remain = MAX_DIARY_IMAGES - formImages.value.length
+  if (remain <= 0) {
+    uni.showToast({ title: `最多 ${MAX_DIARY_IMAGES} 张图片`, icon: 'none' })
+    return
+  }
+  try {
+    const temps = await chooseImages(remain)
+    if (temps.length) {
+      formImages.value.push(...temps)
+      formTempImages.value.push(...temps)
+    }
+  } catch {
+    uni.showToast({ title: '选择图片失败', icon: 'none' })
+  }
+}
+
+/** 移除表单中的某张配图（临时路径直接丢弃，已持久化的在提交成功后清理） */
+function removeFormImage(index: number) {
+  const [removed] = formImages.value.splice(index, 1)
+  const tempIdx = formTempImages.value.indexOf(removed)
+  if (tempIdx > -1) formTempImages.value.splice(tempIdx, 1)
+}
+
+/** 预览时间线里的配图 */
+function previewImages(images: string[], current: string) {
+  uni.previewImage({ urls: images, current })
+}
+
+async function submitForm() {
   if (!form.value.content.trim()) {
     uni.showToast({ title: '写点内容吧', icon: 'none' })
     return
   }
-  const data = {
-    date: form.value.date,
-    title: form.value.title.trim() || undefined,
-    content: form.value.content.trim(),
-    mood: form.value.mood
+  if (saving.value) return
+  saving.value = true
+  uni.showLoading({ title: '保存中', mask: true })
+
+  try {
+    // 临时路径 → 持久化路径（与展示列表一一对应替换）
+    let finalImages = formImages.value
+    if (formTempImages.value.length) {
+      const saved = await saveImages(formTempImages.value)
+      const tempToSaved = new Map(
+        formTempImages.value.map((temp, i) => [temp, saved[i]])
+      )
+      finalImages = formImages.value.map((p) => tempToSaved.get(p) ?? p)
+    }
+
+    const data = {
+      date: form.value.date,
+      title: form.value.title.trim() || undefined,
+      content: form.value.content.trim(),
+      mood: form.value.mood,
+      images: finalImages.length ? finalImages : undefined
+    }
+
+    if (editingId.value) {
+      diaryStore.updateEntry(editingId.value, data)
+      // 清理编辑中被移除的旧图片文件
+      const removed = editingImages.value.filter((p) => !finalImages.includes(p))
+      removeSavedImages(removed)
+      uni.showToast({ title: '已更新', icon: 'success' })
+    } else {
+      diaryStore.addEntry(data)
+      uni.showToast({ title: '已记录', icon: 'success' })
+    }
+    closeForm()
+  } catch {
+    uni.showToast({ title: '图片保存失败，请重试', icon: 'none' })
+  } finally {
+    saving.value = false
+    uni.hideLoading()
   }
-  if (editingId.value) {
-    diaryStore.updateEntry(editingId.value, data)
-    uni.showToast({ title: '已更新', icon: 'success' })
-  } else {
-    diaryStore.addEntry(data)
-    uni.showToast({ title: '已记录', icon: 'success' })
-  }
-  closeForm()
 }
 
 function removeEntry(entry: DiaryEntry) {
   uni.showModal({
     title: '删除日记',
-    content: '确定要删除这条记录吗？',
+    content: '确定要删除这条记录吗？配图也会一并删除。',
     confirmColor: '#FF9F6B',
     success: (res) => {
       if (res.confirm) {
         diaryStore.removeEntry(entry.id)
+        removeSavedImages(entry.images)
         uni.showToast({ title: '已删除', icon: 'none' })
       }
     }
@@ -121,6 +197,16 @@ function pickDate(value: string) {
               </view>
             </view>
             <text class="timeline__content">{{ entry.content }}</text>
+            <view v-if="entry.images && entry.images.length" class="timeline__images">
+              <image
+                v-for="(img, i) in entry.images"
+                :key="i"
+                class="timeline__image"
+                :src="img"
+                mode="aspectFill"
+                @click.stop="previewImages(entry.images!, img)"
+              />
+            </view>
           </view>
         </view>
       </view>
@@ -167,6 +253,26 @@ function pickDate(value: string) {
               placeholder-class="form__placeholder"
               :maxlength="500"
             />
+          </view>
+
+          <view class="form__field">
+            <text class="form__label">
+              配图（选填，最多 {{ MAX_DIARY_IMAGES }} 张）
+            </text>
+            <view class="img-picker">
+              <view v-for="(img, i) in formImages" :key="i" class="img-picker__item">
+                <image class="img-picker__image" :src="img" mode="aspectFill" />
+                <view class="img-picker__del" @click="removeFormImage(i)">✕</view>
+              </view>
+              <view
+                v-if="formImages.length < MAX_DIARY_IMAGES"
+                class="img-picker__add"
+                @click="pickImages"
+              >
+                <text class="img-picker__add-icon">+</text>
+                <text class="img-picker__add-text">添加图片</text>
+              </view>
+            </view>
           </view>
 
           <view class="form__field">
@@ -309,6 +415,20 @@ function pickDate(value: string) {
     color: $text-secondary;
     line-height: 1.7;
   }
+
+  &__images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    margin-top: $spacing-sm;
+  }
+
+  &__image {
+    width: 160rpx;
+    height: 160rpx;
+    border-radius: $radius-sm;
+    background: $divider;
+  }
 }
 
 .mask {
@@ -427,6 +547,64 @@ function pickDate(value: string) {
 
   &__btn {
     flex: 1;
+  }
+}
+
+.img-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+
+  &__item {
+    position: relative;
+    width: 160rpx;
+    height: 160rpx;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    border-radius: $radius-sm;
+    background: $divider;
+  }
+
+  &__del {
+    position: absolute;
+    top: -12rpx;
+    right: -12rpx;
+    width: 36rpx;
+    height: 36rpx;
+    border-radius: 50%;
+    background: rgba(74, 63, 53, 0.6);
+    color: #ffffff;
+    font-size: 20rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__add {
+    width: 160rpx;
+    height: 160rpx;
+    border-radius: $radius-sm;
+    border: 2rpx dashed $divider;
+    background: $bg-card;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6rpx;
+  }
+
+  &__add-icon {
+    font-size: 48rpx;
+    color: $text-muted;
+    line-height: 1;
+  }
+
+  &__add-text {
+    font-size: 22rpx;
+    color: $text-muted;
   }
 }
 </style>
