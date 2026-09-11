@@ -7,6 +7,7 @@ import { defineStore } from 'pinia'
 import type { FeedingRecord } from '@/data/types'
 import { genId } from '@/utils/id'
 import { now } from '@/utils/date'
+import { createPersist } from './persist'
 
 export const useFeedingStore = defineStore(
   'feeding',
@@ -49,6 +50,6 @@ export const useFeedingStore = defineStore(
     return { records, sortedRecords, getRecordsByDate, addRecord, updateRecord, removeRecord }
   },
   {
-    persist: { key: 'cat_feeding' }
+    persist: createPersist({ key: 'cat_feeding', version: 1 })
   }
 )

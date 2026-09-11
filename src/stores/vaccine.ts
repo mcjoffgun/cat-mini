@@ -6,6 +6,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { VaccineRecord } from '@/data/types'
 import { genId } from '@/utils/id'
+import { createPersist } from './persist'
 
 export const useVaccineStore = defineStore(
   'vaccine',
@@ -38,6 +39,6 @@ export const useVaccineStore = defineStore(
     return { records, recordCount, addRecord, updateRecord, removeRecord }
   },
   {
-    persist: { key: 'cat_vaccine' }
+    persist: createPersist({ key: 'cat_vaccine', version: 1 })
   }
 )

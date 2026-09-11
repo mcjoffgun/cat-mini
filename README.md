@@ -155,6 +155,7 @@ cat-miniapp/
 │   │   ├── cat-facts.ts        # 养猫知识数据
 │   │   └── types.ts            # 业务类型定义
 │   ├── stores/                 # Pinia 状态管理
+│   │   ├── persist.ts          # 持久化统一封装（容错 + 版本迁移）
 │   │   ├── diary.ts            # 日记数据
 │   │   ├── favorite.ts         # 收藏
 │   │   ├── feeding.ts          # 喂食记录
@@ -163,6 +164,7 @@ cat-miniapp/
 │   │   ├── age.ts              # 年龄换算
 │   │   ├── date.ts             # 日期处理
 │   │   ├── id.ts               # ID 生成
+│   │   ├── image.ts            # 选图与本地图片持久化
 │   │   └── storage.ts          # 本地存储工具
 │   ├── styles/                 # 全局样式
 │   │   └── global.scss         # 全局样式
@@ -187,7 +189,7 @@ cat-miniapp/
 | 状态管理 | **Pinia 2** | **唯一方案**，Vue3 官方推荐，轻量易用 |
 | 样式 | SCSS（sass） | 变量、嵌套、混入，方便维护 |
 | UI 库 | （自研组件） | 定制化强，轻量无依赖 |
-| 存储 | Pinia 持久化插件 + `uni` storage | 工具类数据本地化，无需后端 |
+| 存储 | Pinia 持久化插件 + `uni` storage | 工具类数据本地化，无需后端；读写容错 + 数据版本信封，支持旧结构迁移 |
 | 图片 | 色块 + emoji 占位 | 后续可替换为真实图片 |
 
 ### 版本约束（经 npm registry 核实的兼容组合）
@@ -226,7 +228,7 @@ cat-miniapp/
 - [x] 收藏功能
 - [x] 分享功能
 - [x] 日记图片
-- [ ] 数据持久化优化
+- [x] 数据持久化优化
 
 ### Phase 3：扩展版本
 - [ ] 工具：养猫成本计算器

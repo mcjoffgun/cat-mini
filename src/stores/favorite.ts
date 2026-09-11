@@ -4,6 +4,7 @@
  */
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { createPersist } from './persist'
 
 export const useFavoriteStore = defineStore(
   'favorite',
@@ -31,6 +32,6 @@ export const useFavoriteStore = defineStore(
     return { favoriteIds, favoriteCount, isFavorite, toggleFavorite }
   },
   {
-    persist: { key: 'cat_favorite' }
+    persist: createPersist({ key: 'cat_favorite', version: 1 })
   }
 )

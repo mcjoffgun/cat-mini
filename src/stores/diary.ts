@@ -7,6 +7,7 @@ import { defineStore } from 'pinia'
 import type { DiaryEntry } from '@/data/types'
 import { genId } from '@/utils/id'
 import { now } from '@/utils/date'
+import { createPersist } from './persist'
 
 export const useDiaryStore = defineStore(
   'diary',
@@ -41,6 +42,6 @@ export const useDiaryStore = defineStore(
     return { entries, sortedEntries, addEntry, updateEntry, removeEntry }
   },
   {
-    persist: { key: 'cat_diary' }
+    persist: createPersist({ key: 'cat_diary', version: 1 })
   }
 )

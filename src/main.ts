@@ -2,6 +2,7 @@ import { createSSRApp } from 'vue'
 import * as Pinia from 'pinia'
 import { createPersistedState } from 'pinia-plugin-persistedstate'
 import App from './App.vue'
+import { uniStorage } from './stores/persist'
 
 export function createApp() {
   const app = createSSRApp(App)
@@ -10,11 +11,8 @@ export function createApp() {
   const pinia = Pinia.createPinia()
   pinia.use(
     createPersistedState({
-      // 小程序环境没有 window.localStorage，改用 uni storage
-      storage: {
-        getItem: (key) => uni.getStorageSync(key),
-        setItem: (key, value) => uni.setStorageSync(key, value)
-      }
+      // 小程序环境没有 window.localStorage，改用带容错的 uni storage
+      storage: uniStorage
     })
   )
 
