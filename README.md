@@ -207,7 +207,7 @@ cat-miniapp/
 | pinia-plugin-persistedstate | ^3.2.0 | 状态自动持久化到本地 |
 | sass | ^1.71.0 | |
 | typescript | ^5.3.3 | |
-| @uni-helper/vite-plugin-uni-components | 0.3.2 | 组件自动引入；peer 声明为 vite ^5，与本项目 vite 8 冲突，需用 `npm i -D --legacy-peer-deps` 安装，实测构建兼容 |
+| @uni-helper/vite-plugin-uni-components | 0.3.2 | 组件自动引入；peer 声明为 vite ^5，与本项目 vite 8 冲突但实测兼容。已由根目录 `.npmrc`（`legacy-peer-deps=true`）自动放宽 peer 检查，`npm install` 无需再加 flag |
 
 ---
 
