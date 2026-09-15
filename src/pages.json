@@ -59,6 +59,12 @@
       }
     },
     {
+      "path": "pages/tool-detail/dangerous-foods",
+      "style": {
+        "navigationBarTitleText": "危险食物指南"
+      }
+    },
+    {
       "path": "pages/tool-detail/cost-calculator",
       "style": {
         "navigationBarTitleText": "养猫成本计算器"

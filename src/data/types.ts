@@ -176,3 +176,51 @@ export const FEEDBACK_TYPE_LABELS: Record<FeedbackType, string> = {
   content: '内容纠错',
   other: '其他'
 }
+
+/* ========================================
+ * 危险食物指南相关类型
+ * ======================================== */
+
+/** 食物风险等级 */
+export type FoodRiskLevel = 'deadly' | 'danger' | 'caution'
+
+/** 危险食物条目 */
+export interface DangerousFood {
+  id: number
+  /** 食物名称 */
+  name: string
+  /** 展示 emoji */
+  emoji: string
+  /** 风险等级 */
+  level: FoodRiskLevel
+  /** 常见来源 */
+  foundIn: string
+  /** 危害与中毒症状 */
+  symptoms: string
+  /** 误食后的处理建议 */
+  action: string
+}
+
+/** 风险等级标签映射 */
+export const FOOD_RISK_LABELS: Record<FoodRiskLevel, string> = {
+  deadly: '剧毒',
+  danger: '危险',
+  caution: '慎用'
+}
+
+/** 安全替代零食 */
+export interface SafeFood {
+  id: number
+  name: string
+  emoji: string
+  /** 喂食说明 */
+  note: string
+}
+
+/** 应急处理步骤 */
+export interface EmergencyStep {
+  /** 步骤标题 */
+  title: string
+  /** 步骤说明 */
+  desc: string
+}

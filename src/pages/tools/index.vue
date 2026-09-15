@@ -47,6 +47,13 @@ const tools = computed(() => [
     badge: ''
   },
   {
+    icon: '🚫',
+    name: '危险食物指南',
+    desc: '这些食物千万别喂猫',
+    url: '/pages/tool-detail/dangerous-foods',
+    badge: ''
+  },
+  {
     icon: '🧮',
     name: '养猫成本计算器',
     desc: '算算养猫每月花多少',

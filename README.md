@@ -77,6 +77,7 @@
 | 📝 养猫日记 | P1 | 文字 + 图片，时间线展示 |
 | 🍚 喂食记录 | P1 | 记录喂粮时间和量 |
 | ❓ 猫咪身体语言 | P1 | 尾巴、耳朵和声音等行为解读 |
+| 🚫 危险食物指南 | P0 | 21 种危险食物分级图鉴 + 应急四步 + 安全零食清单 |
 | 🧮 养猫成本计算器 | P2 | 初期投入 + 月均 / 首年 / 日均成本测算，含消费水平预设 |
 
 品种真实图片仍在规划中。品种详情、日记、首页和成本计算器已支持分享给好友与朋友圈；日记支持添加本地配图。工具页底部提供意见反馈入口（反馈本地留存 + 一键复制 + 微信官方反馈渠道）。
@@ -143,6 +144,7 @@ cat-miniapp/
 │   │       ├── age-converter.vue
 │   │       ├── body-language.vue
 │   │       ├── cost-calculator.vue
+│   │       ├── dangerous-foods.vue
 │   │       ├── diary.vue
 │   │       ├── feeding.vue
 │   │       └── vaccine.vue
@@ -157,6 +159,7 @@ cat-miniapp/
 │   │   ├── body-language.ts    # 猫咪身体语言数据
 │   │   ├── cat-breeds.ts       # 猫咪品种数据
 │   │   ├── cat-facts.ts        # 养猫知识数据
+│   │   ├── dangerous-foods.ts  # 危险食物与应急指南数据
 │   │   └── types.ts            # 业务类型定义
 │   ├── stores/                 # Pinia 状态管理
 │   │   ├── persist.ts          # 持久化统一封装（容错 + 版本迁移）
