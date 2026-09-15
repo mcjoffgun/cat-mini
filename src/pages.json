@@ -57,6 +57,12 @@
       "style": {
         "navigationBarTitleText": "喂食记录"
       }
+    },
+    {
+      "path": "pages/tool-detail/cost-calculator",
+      "style": {
+        "navigationBarTitleText": "养猫成本计算器"
+      }
     }
   ],
   "globalStyle": {

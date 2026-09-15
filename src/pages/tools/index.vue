@@ -43,6 +43,13 @@ const tools = computed(() => [
     desc: '看懂尾巴耳朵的含义',
     url: '/pages/tool-detail/body-language',
     badge: ''
+  },
+  {
+    icon: '🧮',
+    name: '养猫成本计算器',
+    desc: '算算养猫每月花多少',
+    url: '/pages/tool-detail/cost-calculator',
+    badge: ''
   }
 ])
 
