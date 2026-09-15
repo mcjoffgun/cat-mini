@@ -3,7 +3,16 @@ import { computed, ref } from 'vue'
 import { onShow, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
 import { catBreeds } from '@/data/cat-breeds'
 import { getRandomFact, catFacts } from '@/data/cat-facts'
-import { today } from '@/utils/date'
+import { today, daysUntil, daysBetween } from '@/utils/date'
+import { useVaccineStore } from '@/stores/vaccine'
+import { useFeedingStore } from '@/stores/feeding'
+import { useDiaryStore } from '@/stores/diary'
+import { useFavoriteStore } from '@/stores/favorite'
+
+const vaccineStore = useVaccineStore()
+const feedingStore = useFeedingStore()
+const diaryStore = useDiaryStore()
+const favoriteStore = useFavoriteStore()
 
 const currentDate = ref(today())
 
@@ -20,12 +29,92 @@ function refreshFact() {
   fact.value = getRandomFact()
 }
 
-const quickTools = [
-  { icon: '🐱', name: '年龄换算', desc: '猫龄换算人龄', url: '/pages/tool-detail/age-converter' },
-  { icon: '💉', name: '疫苗提醒', desc: '打疫苗不遗漏', url: '/pages/tool-detail/vaccine' },
-  { icon: '🍚', name: '喂食记录', desc: '记录每日喂养', url: '/pages/tool-detail/feeding' },
-  { icon: '📝', name: '养猫日记', desc: '记录猫主子日常', url: '/pages/tool-detail/diary' }
-]
+/** 最紧急的一条疫苗/驱虫记录（按下次日期最近排序） */
+const urgentVaccine = computed(() => {
+  if (!vaccineStore.records.length) return null
+  return [...vaccineStore.records].sort((a, b) => a.nextDate.localeCompare(b.nextDate))[0]
+})
+
+/** 距离最近疫苗计划的天数（负数表示已逾期） */
+const vaccineDays = computed(() =>
+  urgentVaccine.value ? daysUntil(urgentVaccine.value.nextDate) : 0
+)
+
+/** 今日喂食次数 */
+const todayFeedingCount = computed(
+  () => feedingStore.getRecordsByDate(currentDate.value).length
+)
+
+/** 距离上一篇日记的天数（null 表示还没写过） */
+const diaryGapDays = computed(() => {
+  const last = diaryStore.sortedEntries[0]
+  return last ? daysBetween(last.date, currentDate.value) : null
+})
+
+/** 今日养猫状态看板：数据驱动，点卡片直达对应工具 */
+const statusCards = computed(() => {
+  const vaccine = urgentVaccine.value
+  return [
+    {
+      key: 'vaccine',
+      icon: '💉',
+      label: '疫苗驱虫',
+      value: vaccine
+        ? vaccineDays.value >= 0
+          ? `${vaccineDays.value} 天`
+          : `逾期 ${-vaccineDays.value} 天`
+        : '未设置',
+      desc: vaccine
+        ? vaccineDays.value >= 0
+          ? `${vaccine.name} 还有 ${vaccineDays.value} 天`
+          : `${vaccine.name} 已逾期，尽快安排`
+        : '还没有疫苗计划，去添加',
+      urgent: !!vaccine && vaccineDays.value <= 3,
+      url: '/pages/tool-detail/vaccine',
+      isTab: false
+    },
+    {
+      key: 'feeding',
+      icon: '🍚',
+      label: '今日喂食',
+      value: `${todayFeedingCount.value} 次`,
+      desc: todayFeedingCount.value > 0 ? '今天已喂食，棒棒哒' : '今天还没有喂食记录',
+      urgent: false,
+      url: '/pages/tool-detail/feeding',
+      isTab: false
+    },
+    {
+      key: 'diary',
+      icon: '📝',
+      label: '养猫日记',
+      value:
+        diaryGapDays.value === null
+          ? '未写过'
+          : diaryGapDays.value <= 0
+            ? '今天'
+            : `${diaryGapDays.value} 天前`,
+      desc:
+        diaryGapDays.value === null
+          ? '记录第一篇猫咪日常吧'
+          : diaryGapDays.value <= 0
+            ? '今天已经记过啦'
+            : '上次写日记的时间',
+      urgent: false,
+      url: '/pages/tool-detail/diary',
+      isTab: false
+    },
+    {
+      key: 'favorite',
+      icon: '⭐',
+      label: '我的收藏',
+      value: `${favoriteStore.favoriteCount} 个`,
+      desc: favoriteStore.favoriteCount > 0 ? '收藏的猫咪品种' : '去图鉴收藏喜欢的品种',
+      urgent: false,
+      url: '/pages/catalog/index',
+      isTab: true
+    }
+  ]
+})
 
 onShow(() => {
   currentDate.value = today()
@@ -47,8 +136,16 @@ function goCatalog() {
   uni.switchTab({ url: '/pages/catalog/index' })
 }
 
-function goTool(url: string) {
-  uni.navigateTo({ url })
+function goStatus(card: { url: string; isTab: boolean }) {
+  if (card.isTab) {
+    uni.switchTab({ url: card.url })
+  } else {
+    uni.navigateTo({ url: card.url })
+  }
+}
+
+function goToolsTab() {
+  uni.switchTab({ url: '/pages/tools/index' })
 }
 </script>
 
@@ -84,21 +181,28 @@ function goTool(url: string) {
       </view>
     </view>
 
-    <!-- 快捷工具 -->
+    <!-- 今日养猫状态 -->
     <view class="home__section">
       <view class="home__section-header">
-        <text class="home__section-title">🧰 养猫工具</text>
+        <text class="home__section-title">📊 今日养猫状态</text>
+        <text class="home__section-more" @click="goToolsTab">全部工具 ›</text>
       </view>
-      <view class="quick-grid">
+      <view class="status-grid">
         <view
-          v-for="tool in quickTools"
-          :key="tool.name"
-          class="quick-grid__item"
-          @click="goTool(tool.url)"
+          v-for="card in statusCards"
+          :key="card.key"
+          class="status-card"
+          :class="{ 'status-card--urgent': card.urgent }"
+          @click="goStatus(card)"
         >
-          <view class="quick-grid__icon">{{ tool.icon }}</view>
-          <text class="quick-grid__name">{{ tool.name }}</text>
-          <text class="quick-grid__desc">{{ tool.desc }}</text>
+          <view class="status-card__head">
+            <text class="status-card__icon">{{ card.icon }}</text>
+            <text class="status-card__label">{{ card.label }}</text>
+          </view>
+          <text class="status-card__value" :class="{ 'status-card__value--urgent': card.urgent }">
+            {{ card.value }}
+          </text>
+          <text class="status-card__desc">{{ card.desc }}</text>
         </view>
       </view>
     </view>
@@ -116,7 +220,9 @@ function goTool(url: string) {
     </view>
 
     <view class="home__footer">
-      <text class="home__footer-text">共收录 {{ catFacts.length }} 条养猫知识 · 愿你的猫健康快乐</text>
+      <text class="home__footer-text">
+        共收录 {{ catBreeds.length }} 个品种 · {{ catFacts.length }} 条养猫知识 · 愿你的猫健康快乐
+      </text>
     </view>
   </view>
 </template>
@@ -222,40 +328,68 @@ function goTool(url: string) {
   }
 }
 
-.quick-grid {
+.status-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: $spacing-sm;
+}
 
-  &__item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: $bg-card;
-    border-radius: $radius-md;
-    box-shadow: $shadow-card;
-    padding: $spacing-md $spacing-xs;
+.status-card {
+  display: flex;
+  flex-direction: column;
+  background: $bg-card;
+  border: 2rpx solid transparent;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  padding: $spacing-md;
+
+  &:active {
+    background: $accent-cream;
+  }
+
+  &--urgent {
+    border-color: #e57373;
+    background: #fff5f5;
 
     &:active {
-      background: $accent-cream;
+      background: #ffecec;
     }
   }
 
-  &__icon {
-    font-size: 52rpx;
-    margin-bottom: $spacing-xs;
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
   }
 
-  &__name {
+  &__icon {
+    font-size: 32rpx;
+  }
+
+  &__label {
     font-size: $font-sm;
-    font-weight: $font-weight-medium;
+    color: $text-secondary;
+  }
+
+  &__value {
+    margin-top: $spacing-sm;
+    font-size: 44rpx;
+    font-weight: $font-weight-bold;
     color: $text-primary;
+    line-height: 1.2;
+
+    &--urgent {
+      color: #e57373;
+    }
   }
 
   &__desc {
-    margin-top: 4rpx;
-    font-size: 20rpx;
+    margin-top: 6rpx;
+    font-size: 22rpx;
     color: $text-muted;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 
