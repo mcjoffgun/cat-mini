@@ -152,3 +152,27 @@ export const FOOD_TYPE_LABELS: Record<NonNullable<FeedingRecord['foodType']>, st
   snack: '零食',
   other: '其他'
 }
+
+/** 用户反馈类型 */
+export type FeedbackType = 'feature' | 'bug' | 'content' | 'other'
+
+/** 用户反馈条目 */
+export interface FeedbackItem {
+  id: string
+  /** 反馈类型 */
+  type: FeedbackType
+  /** 反馈内容 */
+  content: string
+  /** 联系方式（选填） */
+  contact?: string
+  /** 创建时间戳 */
+  createdAt: number
+}
+
+/** 反馈类型标签映射 */
+export const FEEDBACK_TYPE_LABELS: Record<FeedbackType, string> = {
+  feature: '功能建议',
+  bug: 'BUG 反馈',
+  content: '内容纠错',
+  other: '其他'
+}

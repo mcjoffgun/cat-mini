@@ -3,10 +3,12 @@ import { computed } from 'vue'
 import { useDiaryStore } from '@/stores/diary'
 import { useVaccineStore } from '@/stores/vaccine'
 import { useFeedingStore } from '@/stores/feeding'
+import { useFeedbackStore } from '@/stores/feedback'
 
 const diaryStore = useDiaryStore()
 const vaccineStore = useVaccineStore()
 const feedingStore = useFeedingStore()
+const feedbackStore = useFeedbackStore()
 
 const tools = computed(() => [
   {
@@ -82,6 +84,19 @@ function goTool(url: string) {
             <text v-if="tool.badge" class="tool-item__badge">{{ tool.badge }}</text>
           </view>
           <text class="tool-item__desc">{{ tool.desc }}</text>
+        </view>
+        <text class="tool-item__arrow">›</text>
+      </view>
+
+      <!-- 意见反馈入口 -->
+      <view class="tool-item" @click="goTool('/pages/feedback/index')">
+        <view class="tool-item__icon">💬</view>
+        <view class="tool-item__info">
+          <view class="tool-item__title-row">
+            <text class="tool-item__name">意见反馈</text>
+            <text v-if="feedbackStore.items.length" class="tool-item__badge">{{ feedbackStore.items.length }}</text>
+          </view>
+          <text class="tool-item__desc">你的建议是我们改进的动力</text>
         </view>
         <text class="tool-item__arrow">›</text>
       </view>
