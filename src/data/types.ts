@@ -156,6 +156,19 @@ export const FOOD_TYPE_LABELS: Record<NonNullable<FeedingRecord['foodType']>, st
 /** 用户反馈类型 */
 export type FeedbackType = 'feature' | 'bug' | 'content' | 'other'
 
+/** 体重记录 */
+export interface WeightRecord {
+  id: string
+  /** 体重（kg） */
+  weight: number
+  /** 记录日期 YYYY-MM-DD */
+  date: string
+  catName?: string
+  note?: string
+  /** 创建时间戳 */
+  createdAt: number
+}
+
 /** 用户反馈条目 */
 export interface FeedbackItem {
   id: string

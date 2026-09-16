@@ -65,6 +65,12 @@
       }
     },
     {
+      "path": "pages/tool-detail/weight",
+      "style": {
+        "navigationBarTitleText": "体重追踪"
+      }
+    },
+    {
       "path": "pages/tool-detail/cost-calculator",
       "style": {
         "navigationBarTitleText": "养猫成本计算器"

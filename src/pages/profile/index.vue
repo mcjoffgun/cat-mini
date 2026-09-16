@@ -5,6 +5,7 @@ import { useProfileStore } from '@/stores/profile'
 import { useVaccineStore } from '@/stores/vaccine'
 import { useFeedingStore } from '@/stores/feeding'
 import { useDiaryStore } from '@/stores/diary'
+import { useWeightStore } from '@/stores/weight'
 import { catBreeds } from '@/data/cat-breeds'
 import { GENDER_LABELS, GENDER_ICONS } from '@/data/types'
 import type { CatGender, CatProfile } from '@/data/types'
@@ -15,6 +16,7 @@ const profileStore = useProfileStore()
 const vaccineStore = useVaccineStore()
 const feedingStore = useFeedingStore()
 const diaryStore = useDiaryStore()
+const weightStore = useWeightStore()
 
 const currentDate = ref(today())
 const showForm = ref(false)
@@ -91,7 +93,9 @@ function catStats(name: string) {
   }
   const feedCount = feedingStore.records.filter((r) => r.catName === name).length
   const diaryCount = diaryStore.entries.filter((e) => e.catName === name).length
-  return { vaccineText, urgent, feedCount, diaryCount }
+  const weights = weightStore.getRecordsByCat(name)
+  const latestWeight = weights.length ? weights[weights.length - 1].weight : null
+  return { vaccineText, urgent, feedCount, diaryCount, latestWeight }
 }
 
 const breedDisplay = computed(() =>
@@ -264,6 +268,15 @@ function goTool(url: string) {
             >
               <text class="cat-card__stat-icon">📝</text>
               <text class="cat-card__stat-text">日记 {{ catStats(cat.name).diaryCount }} 篇</text>
+            </view>
+            <view
+              class="cat-card__stat"
+              @click.stop="goTool('/pages/tool-detail/weight')"
+            >
+              <text class="cat-card__stat-icon">⚖️</text>
+              <text class="cat-card__stat-text">
+                {{ catStats(cat.name).latestWeight !== null ? `${catStats(cat.name).latestWeight} kg` : '体重未记录' }}
+              </text>
             </view>
           </view>
         </view>

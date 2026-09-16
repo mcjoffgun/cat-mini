@@ -5,12 +5,14 @@ import { useVaccineStore } from '@/stores/vaccine'
 import { useFeedingStore } from '@/stores/feeding'
 import { useFeedbackStore } from '@/stores/feedback'
 import { useProfileStore } from '@/stores/profile'
+import { useWeightStore } from '@/stores/weight'
 
 const diaryStore = useDiaryStore()
 const vaccineStore = useVaccineStore()
 const feedingStore = useFeedingStore()
 const feedbackStore = useFeedbackStore()
 const profileStore = useProfileStore()
+const weightStore = useWeightStore()
 
 const tools = computed(() => [
   {
@@ -54,6 +56,13 @@ const tools = computed(() => [
     desc: '这些食物千万别喂猫',
     url: '/pages/tool-detail/dangerous-foods',
     badge: ''
+  },
+  {
+    icon: '⚖️',
+    name: '体重追踪',
+    desc: '记录曲线，胖瘦一目了然',
+    url: '/pages/tool-detail/weight',
+    badge: weightStore.records.length > 0 ? `${weightStore.records.length}` : ''
   },
   {
     icon: '🧮',
