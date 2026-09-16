@@ -149,6 +149,10 @@ function goStatus(card: { url: string; isTab: boolean }) {
   }
 }
 
+function goTool(url: string) {
+  uni.navigateTo({ url })
+}
+
 function goToolsTab() {
   uni.switchTab({ url: '/pages/tools/index' })
 }
@@ -209,6 +213,18 @@ function goToolsTab() {
           </text>
           <text class="status-card__desc">{{ card.desc }}</text>
         </view>
+      </view>
+    </view>
+
+    <!-- 危险食物指南入口 -->
+    <view class="home__section">
+      <view class="danger-banner" @click="goTool('/pages/tool-detail/dangerous-foods')">
+        <text class="danger-banner__icon">🚫</text>
+        <view class="danger-banner__info">
+          <text class="danger-banner__title">危险食物指南</text>
+          <text class="danger-banner__desc">百合、洋葱、巧克力……这些千万别喂猫</text>
+        </view>
+        <text class="danger-banner__arrow">›</text>
       </view>
     </view>
 
@@ -398,13 +414,61 @@ function goToolsTab() {
   }
 }
 
+.danger-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  background: $bg-card;
+  border: 2rpx solid rgba(229, 115, 115, 0.4);
+  border-left: 10rpx solid #e57373;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  padding: $spacing-md $spacing-lg;
+
+  &:active {
+    background: #fff5f5;
+  }
+
+  &__icon {
+    font-size: 44rpx;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    display: block;
+    font-size: $font-subtitle;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  &__desc {
+    display: block;
+    margin-top: 4rpx;
+    font-size: $font-sm;
+    color: $text-secondary;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__arrow {
+    font-size: 44rpx;
+    color: $text-muted;
+    flex-shrink: 0;
+  }
+}
+
 .fact-card {
   position: relative;
   background: linear-gradient(135deg, $accent-cream, #fff);
   border-radius: $radius-lg;
   padding: $spacing-lg;
   box-shadow: $shadow-card;
-
   &__badge {
     display: inline-block;
     font-size: $font-sm;
