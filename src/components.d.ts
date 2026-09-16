@@ -14,6 +14,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     BreedImage: typeof import('./components/breed-image/BreedImage.vue')['default']
     CatCard: typeof import('./components/cat-card/CatCard.vue')['default']
+    CatNamePicker: typeof import('./components/cat-name-picker/CatNamePicker.vue')['default']
     Empty: typeof import('./components/empty/Empty.vue')['default']
     NavBar: typeof import('./components/nav-bar/NavBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -26,6 +27,7 @@ declare module 'vue' {
 declare global {
   const BreedImage: typeof import('./components/breed-image/BreedImage.vue')['default']
   const CatCard: typeof import('./components/cat-card/CatCard.vue')['default']
+  const CatNamePicker: typeof import('./components/cat-name-picker/CatNamePicker.vue')['default']
   const Empty: typeof import('./components/empty/Empty.vue')['default']
   const NavBar: typeof import('./components/nav-bar/NavBar.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']

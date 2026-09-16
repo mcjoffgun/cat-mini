@@ -4,11 +4,13 @@ import { useDiaryStore } from '@/stores/diary'
 import { useVaccineStore } from '@/stores/vaccine'
 import { useFeedingStore } from '@/stores/feeding'
 import { useFeedbackStore } from '@/stores/feedback'
+import { useProfileStore } from '@/stores/profile'
 
 const diaryStore = useDiaryStore()
 const vaccineStore = useVaccineStore()
 const feedingStore = useFeedingStore()
 const feedbackStore = useFeedbackStore()
+const profileStore = useProfileStore()
 
 const tools = computed(() => [
   {
@@ -76,6 +78,19 @@ function goTool(url: string) {
     </view>
 
     <view class="tools__list">
+      <!-- 我的猫咪档案入口 -->
+      <view class="tool-item" @click="goTool('/pages/profile/index')">
+        <view class="tool-item__icon">🐈</view>
+        <view class="tool-item__info">
+          <view class="tool-item__title-row">
+            <text class="tool-item__name">我的猫咪</text>
+            <text v-if="profileStore.profileCount" class="tool-item__badge">{{ profileStore.profileCount }}</text>
+          </view>
+          <text class="tool-item__desc">建立档案，各工具一键选猫</text>
+        </view>
+        <text class="tool-item__arrow">›</text>
+      </view>
+
       <view
         v-for="tool in tools"
         :key="tool.name"

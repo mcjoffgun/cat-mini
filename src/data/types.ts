@@ -224,3 +224,47 @@ export interface EmergencyStep {
   /** 步骤说明 */
   desc: string
 }
+
+/* ========================================
+ * 猫咪档案相关类型
+ * ======================================== */
+
+/** 性别 */
+export type CatGender = 'male' | 'female' | 'unknown'
+
+/** 猫咪档案 */
+export interface CatProfile {
+  id: string
+  /** 名字 */
+  name: string
+  /** 生日 YYYY-MM-DD（可估算） */
+  birthday?: string
+  /** 性别 */
+  gender?: CatGender
+  /** 关联图鉴品种 id */
+  breedId?: number
+  /** 是否已绝育（undefined = 未填写） */
+  sterilized?: boolean
+  /** 头像 emoji */
+  emoji: string
+  /** 头像背景色 */
+  color: string
+  /** 备注 */
+  note?: string
+  /** 创建时间戳 */
+  createdAt: number
+}
+
+/** 性别标签映射 */
+export const GENDER_LABELS: Record<CatGender, string> = {
+  male: '弟弟',
+  female: '妹妹',
+  unknown: '未知'
+}
+
+/** 性别图标映射 */
+export const GENDER_ICONS: Record<CatGender, string> = {
+  male: '♂',
+  female: '♀',
+  unknown: '❔'
+}

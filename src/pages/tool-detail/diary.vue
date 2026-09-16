@@ -28,7 +28,8 @@ const form = ref({
   date: today(),
   title: '',
   content: '',
-  mood: 'happy' as 'happy' | 'normal' | 'sick'
+  mood: 'happy' as 'happy' | 'normal' | 'sick',
+  catName: ''
 })
 // 表单中的配图（展示用，混合临时路径与已持久化路径）
 const formImages = ref<string[]>([])
@@ -49,7 +50,7 @@ function moodIcon(entry: DiaryEntry): string {
 
 function openAdd() {
   editingId.value = ''
-  form.value = { date: today(), title: '', content: '', mood: 'happy' }
+  form.value = { date: today(), title: '', content: '', mood: 'happy', catName: '' }
   formImages.value = []
   formTempImages.value = []
   editingImages.value = []
@@ -62,7 +63,8 @@ function openEdit(entry: DiaryEntry) {
     date: entry.date,
     title: entry.title || '',
     content: entry.content,
-    mood: entry.mood || 'normal'
+    mood: entry.mood || 'normal',
+    catName: entry.catName || ''
   }
   formImages.value = [...(entry.images || [])]
   formTempImages.value = []
@@ -129,7 +131,8 @@ async function submitForm() {
       title: form.value.title.trim() || undefined,
       content: form.value.content.trim(),
       mood: form.value.mood,
-      images: finalImages.length ? finalImages : undefined
+      images: finalImages.length ? finalImages : undefined,
+      catName: form.value.catName.trim() || undefined
     }
 
     if (editingId.value) {
@@ -192,7 +195,9 @@ function pickDate(value: string) {
               <view class="timeline__card-info">
                 <text v-if="entry.title" class="timeline__title">{{ entry.title }}</text>
                 <text v-else class="timeline__title">无标题</text>
-                <text class="timeline__date">{{ entry.date }}</text>
+                <text class="timeline__date">
+                  {{ entry.date }}<text v-if="entry.catName"> · 🐱 {{ entry.catName }}</text>
+                </text>
               </view>
             </view>
             <text class="timeline__content">{{ entry.content }}</text>
@@ -241,6 +246,11 @@ function pickDate(value: string) {
               placeholder="如：第一次剪指甲"
               placeholder-class="form__placeholder"
             />
+          </view>
+
+          <view class="form__field">
+            <text class="form__label">猫咪名字（选填）</text>
+            <CatNamePicker v-model="form.catName" />
           </view>
 
           <view class="form__field">

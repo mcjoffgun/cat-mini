@@ -75,6 +75,12 @@
       "style": {
         "navigationBarTitleText": "意见反馈"
       }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的猫咪"
+      }
     }
   ],
   "globalStyle": {

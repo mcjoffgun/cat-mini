@@ -7,12 +7,12 @@ import { today, daysUntil, daysBetween } from '@/utils/date'
 import { useVaccineStore } from '@/stores/vaccine'
 import { useFeedingStore } from '@/stores/feeding'
 import { useDiaryStore } from '@/stores/diary'
-import { useFavoriteStore } from '@/stores/favorite'
+import { useProfileStore } from '@/stores/profile'
 
 const vaccineStore = useVaccineStore()
 const feedingStore = useFeedingStore()
 const diaryStore = useDiaryStore()
-const favoriteStore = useFavoriteStore()
+const profileStore = useProfileStore()
 
 const currentDate = ref(today())
 
@@ -104,14 +104,19 @@ const statusCards = computed(() => {
       isTab: false
     },
     {
-      key: 'favorite',
-      icon: '⭐',
-      label: '我的收藏',
-      value: `${favoriteStore.favoriteCount} 个`,
-      desc: favoriteStore.favoriteCount > 0 ? '收藏的猫咪品种' : '去图鉴收藏喜欢的品种',
+      key: 'cats',
+      icon: '🐈',
+      label: '我的猫咪',
+      value: profileStore.profileCount ? `${profileStore.profileCount} 只` : '未建档',
+      desc: profileStore.profileCount
+        ? profileStore.sortedProfiles
+            .map((p) => p.name)
+            .slice(0, 3)
+            .join('、') + (profileStore.profileCount > 3 ? ' 等' : '')
+        : '给猫主子建个档案吧',
       urgent: false,
-      url: '/pages/catalog/index',
-      isTab: true
+      url: '/pages/profile/index',
+      isTab: false
     }
   ]
 })

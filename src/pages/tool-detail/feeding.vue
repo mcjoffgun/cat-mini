@@ -234,12 +234,7 @@ function currentTime(): string {
 
           <view class="form__field">
             <text class="form__label">猫咪名字</text>
-            <input
-              v-model="form.catName"
-              class="form__input"
-              placeholder="选填，如：咪咪"
-              placeholder-class="form__placeholder"
-            />
+            <CatNamePicker v-model="form.catName" />
           </view>
         </view>
 
