@@ -78,13 +78,30 @@ function exportAsFile() {
     return
   }
   const json = exportJsonText()
+  const expectBytes = byteLength(json)
   try {
     const filePath = `${wx.env.USER_DATA_PATH}/${backupFileName(Date.now())}`
-    wx.getFileSystemManager().writeFile({
+    const fs = wx.getFileSystemManager()
+    fs.writeFile({
       filePath,
       data: json,
       encoding: 'utf8',
       success: () => {
+        // 写后校验：重新读回比较字节数，防止大文件被截断
+        try {
+          const readBack = fs.readFileSync(filePath, 'utf8')
+          if (byteLength(String(readBack)) !== expectBytes) {
+            uni.showModal({
+              title: '导出可能不完整',
+              content: '备份文件写入后校验不通过（内容不完整），建议改用「复制备份文本」，或先减少数据量再导出。',
+              showCancel: false,
+              confirmColor: '#FF9F6B'
+            })
+            return
+          }
+        } catch {
+          // 校验失败不阻塞分享流程
+        }
         wx.shareFileMessage({
           filePath,
           fail: () => {
@@ -101,7 +118,7 @@ function exportAsFile() {
   }
 }
 
-/** 文本导出：复制到剪贴板（兜底通道） */
+/** 文本导出：复制到剪贴板（兜底通道，先解释这是数据包并引导保存） */
 function exportAsText() {
   if (!totalCount.value) {
     uni.showToast({ title: '还没有任何数据哦', icon: 'none' })
@@ -109,25 +126,30 @@ function exportAsText() {
   }
   const json = exportJsonText()
   const size = byteLength(json)
-  const doCopy = () => {
-    uni.setClipboardData({
-      data: json,
-      success: () => uni.showToast({ title: '已复制，建议尽快粘贴到聊天中保存', icon: 'none' })
-    })
+  const tooLarge = size > 100 * 1024
+  const lines = [
+    '下面复制的内容是一份「备份数据包」（JSON 格式）：',
+    '它是一串代码式的字符，不是给人读的，也无需看懂，',
+    '请原样粘贴到「文件传输助手」发送保存；恢复时再原样粘贴或选择导入。'
+  ]
+  if (tooLarge) {
+    lines.push('', `⚠️ 备份较大（约 ${formatBytes(size)}），剪贴板可能截断，建议改用「导出为文件」。`)
   }
-  if (size > 100 * 1024) {
-    uni.showModal({
-      title: '备份较大',
-      content: `本次备份约 ${formatBytes(size)}，剪贴板可能截断，建议使用「导出为文件」。仍要复制文本吗？`,
-      confirmText: '继续复制',
-      confirmColor: '#FF9F6B',
-      success: (res) => {
-        if (res.confirm) doCopy()
-      }
-    })
-  } else {
-    doCopy()
-  }
+  uni.showModal({
+    title: '复制备份数据包',
+    content: lines.join('\n'),
+    confirmText: '复制',
+    confirmColor: '#FF9F6B',
+    success: (res) => {
+      if (!res.confirm) return
+      uni.setClipboardData({
+        data: json,
+        success: () => {
+          uni.showToast({ title: '已复制，去文件传输助手粘贴保存吧', icon: 'none' })
+        }
+      })
+    }
+  })
 }
 
 /* ---------- 导入 ---------- */
@@ -142,7 +164,21 @@ function importFromFile() {
       if (!file) return
       try {
         const content = wx.getFileSystemManager().readFileSync(file.path, 'utf8')
-        handleImportText(String(content))
+        const text = String(content)
+        // 完整性校验：读出的 UTF-8 字节数应与文件大小一致，偏小说明文件被截断
+        if (file.size > 0 && byteLength(text) !== file.size) {
+          uni.showModal({
+            title: '文件可能不完整',
+            content: `读取到的内容约 ${formatBytes(byteLength(text))}，与文件大小 ${formatBytes(file.size)} 不一致，可能被截断。仍要尝试解析吗？`,
+            confirmText: '仍要解析',
+            confirmColor: '#FF9F6B',
+            success: (r) => {
+              if (r.confirm) handleImportText(text)
+            }
+          })
+          return
+        }
+        handleImportText(text)
       } catch {
         uni.showToast({ title: '读取文件失败', icon: 'none' })
       }
@@ -191,7 +227,7 @@ function confirmImport(parsed: BackupParsed) {
       })
       pasteText.value = ''
       showPasteArea.value = false
-      uni.showToast({ title: `已恢复 ${written} 个模块`, icon: 'success' })
+      uni.showToast({ title: `已恢复 ${written} 个模块`, icon: 'none' })
     }
   })
 }
@@ -254,7 +290,8 @@ function importFromPaste() {
           <textarea
             v-model="pasteText"
             class="bk__textarea"
-            placeholder="长按粘贴之前复制的备份 JSON 文本"
+            :maxlength="-1"
+            placeholder="长按粘贴之前复制的备份数据包（一串以 app:cat-miniapp 开头的字符）"
             placeholder-class="bk__placeholder"
           />
           <view class="btn-ghost bk__btn bk__btn--parse" @click="importFromPaste">解析并预览</view>
@@ -266,9 +303,10 @@ function importFromPaste() {
     <view class="bk__section">
       <text class="bk__section-title">⚠️ 须知</text>
       <view class="bk__card">
-        <text class="bk__notice">1. 日记配图文件保存在本机，备份只包含文字数据；跨设备恢复后旧图片可能无法显示。</text>
-        <text class="bk__notice">2. 备份 JSON 含你的全部记录，请只发送到自己的可信会话，不要转发给他人。</text>
-        <text class="bk__notice">3. 建议至少每月备份一次；微信在存储空间不足时可能自动清理小程序数据。</text>
+        <text class="bk__notice">1. 备份数据包是 JSON 格式的代码式文本，不是给人读的，原样保存、原样恢复即可，无需看懂。</text>
+        <text class="bk__notice">2. 日记配图文件保存在本机，备份只包含文字数据；跨设备恢复后旧图片可能无法显示。</text>
+        <text class="bk__notice">3. 备份 JSON 含你的全部记录，请只发送到自己的可信会话，不要转发给他人。</text>
+        <text class="bk__notice">4. 建议至少每月备份一次；微信在存储空间不足时可能自动清理小程序数据。</text>
       </view>
     </view>
   </view>

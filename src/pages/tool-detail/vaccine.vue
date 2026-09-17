@@ -194,7 +194,7 @@ function submitPlan() {
       if (res.confirm) {
         fresh.forEach((p) => vaccineStore.addRecord(p))
         closePlan()
-        uni.showToast({ title: `已生成 ${fresh.length} 条`, icon: 'success' })
+        uni.showToast({ title: `已生成 ${fresh.length} 条`, icon: 'none' })
       }
     }
   })
