@@ -87,6 +87,12 @@
       "style": {
         "navigationBarTitleText": "我的猫咪"
       }
+    },
+    {
+      "path": "pages/backup/index",
+      "style": {
+        "navigationBarTitleText": "数据管理"
+      }
     }
   ],
   "globalStyle": {

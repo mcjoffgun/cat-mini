@@ -131,6 +131,18 @@ function goTool(url: string) {
         </view>
         <text class="tool-item__arrow">›</text>
       </view>
+
+      <!-- 数据管理入口 -->
+      <view class="tool-item" @click="goTool('/pages/backup/index')">
+        <view class="tool-item__icon">🗂️</view>
+        <view class="tool-item__info">
+          <view class="tool-item__title-row">
+            <text class="tool-item__name">数据管理</text>
+          </view>
+          <text class="tool-item__desc">备份与恢复，换机不丢数据</text>
+        </view>
+        <text class="tool-item__arrow">›</text>
+      </view>
     </view>
 
     <view class="tools__footer">
