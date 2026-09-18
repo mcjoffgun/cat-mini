@@ -139,6 +139,8 @@
 
 ```
 cat-miniapp/
+├── scripts/
+│   └── gen-tabbar-icons.mjs    # TabBar 图标生成脚本（node scripts/gen-tabbar-icons.mjs，零依赖程序化绘制）
 ├── src/
 │   ├── pages/                  # 页面目录
 │   │   ├── home/               # 首页

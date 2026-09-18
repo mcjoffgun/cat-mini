@@ -110,15 +110,21 @@
     "list": [
       {
         "pagePath": "pages/home/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/catalog/index",
-        "text": "图鉴"
+        "text": "图鉴",
+        "iconPath": "static/tabbar/catalog.png",
+        "selectedIconPath": "static/tabbar/catalog-active.png"
       },
       {
         "pagePath": "pages/tools/index",
-        "text": "工具"
+        "text": "工具",
+        "iconPath": "static/tabbar/tools.png",
+        "selectedIconPath": "static/tabbar/tools-active.png"
       }
     ]
   }
